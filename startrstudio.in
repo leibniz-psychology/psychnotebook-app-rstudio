@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# RStudio cannot find R if not set, it needs to be set to the profile, so R can
+# find its union package dir
+export R_HOME=${GUIX_ENVIRONMENT:-${HOME}/.guix-profile}/lib/R
+export R_DOC_DIR=${R_HOME}/doc
+# Do not restore variables, which reference the store. They might be different
+# when the profile changes and this breaks session resumption.
+blacklisted=$(env | grep /gnu/store/ | cut -d = -f 1 | paste -s -d :)
+
+exec \
+	RSTUDIO_PREFIX/bin/rsession \
+	--program-mode=server \
+	--allow-terminal-websockets=0 \
+	--log-stderr=1 \
+	--standalone=1 \
+	--user-identity=$(whoami) \
+	--session-timeout-minutes=120 \
+	--session-disconnected-timeout-minutes=120 \
+	--www-socket=${HOME}/.rstudio-socket \
+	"--session-env-var-save-blacklist=$blacklisted"
+

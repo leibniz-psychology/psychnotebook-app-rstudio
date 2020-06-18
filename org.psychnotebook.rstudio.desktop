@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=RStudio Web
+TryExec=startrstudio
+Exec=startrstudio
+Keywords=PsychNotebook
+Categories=Science;Development
+X-Conductor-Key=rstudio
+X-Conductor-Socket=~/.rstudio-socket
