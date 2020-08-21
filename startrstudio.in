@@ -1,22 +1,35 @@
 #!/bin/bash
 
-# RStudio cannot find R if not set, it needs to be set to the profile, so R can
-# find its union package dir
-export R_HOME=${GUIX_ENVIRONMENT:-${HOME}/.guix-profile}/lib/R
-export R_DOC_DIR=${R_HOME}/doc
+# Data directory for rserver. Do not persist to $HOME, it does not contain any
+# useful data.
+datadir=/tmp/rstudio-server-data
+rsessionconfig="$datadir/rsession.conf"
+
+mkdir -p "$datadir"
+
 # Do not restore variables, which reference the store. They might be different
 # when the profile changes and this breaks session resumption.
 blacklisted=$(env | grep /gnu/store/ | cut -d = -f 1 | paste -s -d :)
+# Cannot pass options to rsession directly, write config file. Need dynamic
+# file to account for blacklisted variables.
+cat <<EOF > "$rsessionconfig"
+# XXX: Not sure if required
+allow-terminal-websockets=0
+# Verbose logging
+log-stderr=1
+# Session timeouts
+session-timeout-minutes=120
+session-disconnected-timeout-minutes=120
+# Do not restore variables.
+session-env-var-save-blacklist=$blacklisted
+EOF
 
 exec \
-	RSTUDIO_PREFIX/bin/rsession \
-	--program-mode=server \
-	--allow-terminal-websockets=0 \
-	--log-stderr=1 \
-	--standalone=1 \
-	--user-identity=$(whoami) \
-	--session-timeout-minutes=120 \
-	--session-disconnected-timeout-minutes=120 \
+	RSTUDIO_PREFIX/bin/rserver \
+	--server-data-dir="$datadir" \
+	--server-daemonize=0 \
 	--www-socket=${HOME}/.rstudio-socket \
-	"--session-env-var-save-blacklist=$blacklisted"
+	--auth-none=1 \
+	--server-oneshot=1 \
+	--rsession-config-file="$rsessionconfig"
 
