@@ -24,12 +24,19 @@ session-disconnected-timeout-minutes=120
 session-env-var-save-blacklist=$blacklisted
 EOF
 
-exec \
-	RSTUDIO_PREFIX/bin/rserver \
+# make sure USER envvar is set, so rstudio server does not loop endlessly when
+# authenticating with --auth-none=1
+export USER=${USER:-$(whoami)}
+
+# We cannot exec here, because rserver would be PID 1, which cannot send
+# signals to itself apparently.
+RSTUDIO_PREFIX/bin/rserver \
 	--server-data-dir="$datadir" \
 	--server-daemonize=0 \
 	--www-socket=${HOME}/.rstudio-socket \
 	--auth-none=1 \
 	--server-oneshot=1 \
 	--rsession-config-file="$rsessionconfig"
+
+exit $?
 
