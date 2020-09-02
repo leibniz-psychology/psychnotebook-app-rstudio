@@ -22,11 +22,14 @@ session-timeout-minutes=120
 session-disconnected-timeout-minutes=120
 # Do not restore variables.
 session-env-var-save-blacklist=$blacklisted
+# Do not show (bogus, due to container) user identity
+show-user-identity=0
+# Discourage custom package installation, managed by Guix.
+allow-package-installation=0
+# RStudio ignores R_LIBS_SITE, so forward it. There is no way to set site
+# libraries.
+r-libs-user=${R_LIBS_SITE}
 EOF
-
-# make sure USER envvar is set, so rstudio server does not loop endlessly when
-# authenticating with --auth-none=1
-export USER=${USER:-$(whoami)}
 
 # We cannot exec here, because rserver would be PID 1, which cannot send
 # signals to itself apparently.
