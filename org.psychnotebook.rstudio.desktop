@@ -9,5 +9,4 @@ Categories=Science;Development
 Description=IDE for R.
 Description[de]=Entwicklungsumgebung für R. Eignet sich zur Inspektion und Analyse von Daten.
 Icon=rstudio
-X-Conductor-Key=rstudio
-X-Conductor-Socket=~/.rstudio-socket
+Interfaces=org.leibniz-psychology.conductor.v1
