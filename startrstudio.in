@@ -38,15 +38,10 @@ allow-package-installation=0
 r-libs-user=${R_LIBS_SITE}
 EOF
 
-# We cannot exec here, because rserver would be PID 1, which cannot send
-# signals to itself apparently.
-RSTUDIO_PREFIX/bin/rserver \
+exec RSTUDIO_PREFIX/bin/rserver \
 	--server-data-dir="$datadir" \
 	--server-daemonize=0 \
 	--www-socket=${SOCKET_PATH:-.rstudio-socket} \
 	--auth-none=1 \
 	--server-oneshot=1 \
 	--rsession-config-file="$rsessionconfig"
-
-exit $?
-
