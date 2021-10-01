@@ -29,7 +29,7 @@ log-stderr=1
 session-timeout-minutes=120
 session-disconnected-timeout-minutes=120
 # Do not restore variables.
-session-env-var-save-blacklist=$blacklisted
+session-ephemeral-env-vars=$blacklisted
 # Do not show (bogus, due to container) user identity
 show-user-identity=0
 # Discourage custom package installation, managed by Guix.
@@ -48,6 +48,7 @@ EOF
 
 exec RSTUDIO_PREFIX/bin/rserver \
 	--server-data-dir="$datadir" \
+	--server-user=$USER \
 	--server-daemonize=0 \
 	--www-socket=${SOCKET_PATH:-.rstudio-socket} \
 	--auth-none=1 \
